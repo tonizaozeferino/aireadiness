@@ -1,7 +1,17 @@
 import { MouseEvent, useEffect, useState } from 'react';
-import { Shield, TrendingUp, CheckCircle, ArrowRight, Zap, Scale, FileCheck, Target, Clock, Award, BookCheck } from 'lucide-react';
+import { Shield, TrendingUp, CheckCircle, ArrowRight, Zap, Scale, FileCheck, Target, Clock, Award, BookCheck, X, Settings } from 'lucide-react';
 
 type Route = 'home' | 'impressum' | 'datenschutz' | 'cookies';
+
+type CookieConsent = {
+  necessary: boolean;
+  analytics: boolean;
+  marketing: boolean;
+  functional: boolean;
+};
+
+const CONSENT_STORAGE_KEY = 'cookie-consent';
+const CONSENT_VERSION = '1.0';
 
 const getPathname = () => (typeof window !== 'undefined' ? window.location.pathname : '/');
 
@@ -35,6 +45,61 @@ function useRoute() {
 
 function App() {
   const { route, navigate } = useRoute();
+  const [showBanner, setShowBanner] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [consent, setConsent] = useState<CookieConsent>({
+    necessary: true,
+    analytics: false,
+    marketing: false,
+    functional: false,
+  });
+
+  useEffect(() => {
+    const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.version === CONSENT_VERSION) {
+          setConsent(parsed.consent);
+          setShowBanner(false);
+        } else {
+          setShowBanner(true);
+        }
+      } catch {
+        setShowBanner(true);
+      }
+    } else {
+      setShowBanner(true);
+    }
+  }, []);
+
+  const saveConsent = (newConsent: CookieConsent) => {
+    localStorage.setItem(
+      CONSENT_STORAGE_KEY,
+      JSON.stringify({ version: CONSENT_VERSION, consent: newConsent })
+    );
+    setConsent(newConsent);
+    setShowBanner(false);
+    setShowSettings(false);
+  };
+
+  const acceptAll = () => {
+    saveConsent({
+      necessary: true,
+      analytics: true,
+      marketing: true,
+      functional: true,
+    });
+  };
+
+  const acceptNecessary = () => {
+    saveConsent({
+      necessary: true,
+      analytics: false,
+      marketing: false,
+      functional: false,
+    });
+  };
 
   const handleNav = (path: string) => (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
     event.preventDefault();
@@ -54,7 +119,7 @@ function App() {
             ARC Assessment
           </a>
         </div>
-        <button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg font-medium transition-colors duration-200">
+        <button type="button" className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg font-medium transition-colors duration-200">
           Erstgespräch vereinbaren
         </button>
       </nav>
@@ -99,9 +164,216 @@ function App() {
           >
             Cookies
           </a>
+          <button
+            type="button"
+            onClick={() => setShowSettings(true)}
+            className="text-slate-400 hover:text-white transition-colors duration-200"
+          >
+            Cookie-Einstellungen
+          </button>
         </div>
       </div>
     </footer>
+  );
+
+  const cookieBanner = showBanner && (
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 shadow-2xl z-50 p-6 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Cookie-Einstellungen</h3>
+            <p className="text-slate-700 leading-relaxed">
+              Wir verwenden Cookies, um Ihnen ein optimales Website-Erlebnis zu bieten. Technisch notwendige Cookies sind erforderlich für den Betrieb der Website.
+              Statistik-, Marketing- und funktionale Cookies helfen uns, unser Angebot zu verbessern. Sie können Ihre Einwilligung jederzeit anpassen oder widerrufen.
+              Weitere Informationen finden Sie in unserer{' '}
+              <a
+                href="/Datenschutz"
+                onClick={handleNav('/Datenschutz')}
+                className="text-sky-700 hover:text-sky-900 font-semibold underline"
+              >
+                Datenschutzerklärung
+              </a>
+              {' '}und{' '}
+              <a
+                href="/Cookies"
+                onClick={handleNav('/Cookies')}
+                className="text-sky-700 hover:text-sky-900 font-semibold underline"
+              >
+                Cookie-Richtlinie
+              </a>
+              .
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              className="px-6 py-3 bg-white border-2 border-slate-900 text-slate-900 rounded-lg font-semibold hover:bg-slate-50 transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              Einstellungen
+            </button>
+            <button
+              type="button"
+              onClick={acceptNecessary}
+              className="px-6 py-3 bg-slate-200 text-slate-900 rounded-lg font-semibold hover:bg-slate-300 transition-colors duration-200"
+            >
+              Nur Notwendige
+            </button>
+            <button
+              type="button"
+              onClick={acceptAll}
+              className="px-6 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors duration-200"
+            >
+              Alle akzeptieren
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const cookieSettings = showSettings && (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between rounded-t-2xl">
+          <h2 className="text-2xl font-bold text-slate-900">Cookie-Einstellungen</h2>
+          <button
+            type="button"
+            onClick={() => setShowSettings(false)}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+            aria-label="Cookie-Einstellungen schließen"
+          >
+            <X className="w-6 h-6 text-slate-600" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <p className="text-slate-700 leading-relaxed">
+            Wir verwenden Cookies und ähnliche Technologien, um Ihnen ein optimales Nutzungserlebnis zu bieten.
+            Sie können Ihre Einwilligung für einzelne Cookie-Kategorien erteilen oder ablehnen.
+          </p>
+
+          <div className="space-y-4">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h3 className="font-bold text-slate-900 mb-1">Notwendige Cookies</h3>
+                  <p className="text-sm text-slate-600">
+                    Diese Cookies sind für den Betrieb der Website erforderlich und können nicht deaktiviert werden.
+                    Sie speichern z.B. Ihre Cookie-Einstellungen.
+                  </p>
+                </div>
+                <div className="ml-4 mt-1">
+                  <label className="inline-flex items-center cursor-not-allowed">
+                    <input
+                      type="checkbox"
+                      checked={true}
+                      disabled
+                      className="w-5 h-5 text-sky-700 bg-slate-100 border-slate-300 rounded cursor-not-allowed"
+                      aria-label="Notwendige Cookies (immer aktiv)"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h3 className="font-bold text-slate-900 mb-1">Statistik-Cookies</h3>
+                  <p className="text-sm text-slate-600">
+                    Diese Cookies helfen uns zu verstehen, wie Besucher mit unserer Website interagieren,
+                    indem Informationen anonym gesammelt und gemeldet werden.
+                  </p>
+                </div>
+                <div className="ml-4 mt-1">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consent.analytics}
+                      onChange={(e) => setConsent({ ...consent, analytics: e.target.checked })}
+                      className="w-5 h-5 text-sky-700 bg-white border-slate-300 rounded focus:ring-sky-500 cursor-pointer"
+                      aria-label="Statistik-Cookies aktivieren"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h3 className="font-bold text-slate-900 mb-1">Marketing-Cookies</h3>
+                  <p className="text-sm text-slate-600">
+                    Diese Cookies werden verwendet, um Besuchern auf Webseiten zu folgen und relevante Werbung
+                    zu präsentieren.
+                  </p>
+                </div>
+                <div className="ml-4 mt-1">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consent.marketing}
+                      onChange={(e) => setConsent({ ...consent, marketing: e.target.checked })}
+                      className="w-5 h-5 text-sky-700 bg-white border-slate-300 rounded focus:ring-sky-500 cursor-pointer"
+                      aria-label="Marketing-Cookies aktivieren"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h3 className="font-bold text-slate-900 mb-1">Funktionale Cookies</h3>
+                  <p className="text-sm text-slate-600">
+                    Diese Cookies ermöglichen erweiterte Funktionalität und Personalisierung, wie z.B.
+                    Videos und Live-Chats.
+                  </p>
+                </div>
+                <div className="ml-4 mt-1">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consent.functional}
+                      onChange={(e) => setConsent({ ...consent, functional: e.target.checked })}
+                      className="w-5 h-5 text-sky-700 bg-white border-slate-300 rounded focus:ring-sky-500 cursor-pointer"
+                      aria-label="Funktionale Cookies aktivieren"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <button
+              type="button"
+              onClick={acceptNecessary}
+              className="flex-1 px-6 py-3 bg-slate-200 text-slate-900 rounded-lg font-semibold hover:bg-slate-300 transition-colors duration-200"
+            >
+              Nur Notwendige
+            </button>
+            <button
+              type="button"
+              onClick={() => saveConsent(consent)}
+              className="flex-1 px-6 py-3 bg-sky-700 text-white rounded-lg font-semibold hover:bg-sky-800 transition-colors duration-200"
+            >
+              Auswahl speichern
+            </button>
+            <button
+              type="button"
+              onClick={acceptAll}
+              className="flex-1 px-6 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors duration-200"
+            >
+              Alle akzeptieren
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 
   const homePage = (
@@ -115,7 +387,7 @@ function App() {
             <p className="text-xl md:text-2xl text-slate-700 mb-10 leading-relaxed">
               Machen Sie Ihr Unternehmen fit für die KI-Ära – profitabel, operativ umsetzbar und rechtlich abgesichert.
             </p>
-            <button className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl inline-flex items-center space-x-2">
+            <button type="button" className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl inline-flex items-center space-x-2">
               <span>Jetzt Erstgespräch vereinbaren</span>
               <ArrowRight className="w-5 h-5" />
             </button>
@@ -482,11 +754,11 @@ function App() {
             Wir erstellen Ihnen gerne ein individuelles Angebot, das exakt auf Ihre Bedürfnisse, Ihre Branche und Ihren Reifegrad zugeschnitten ist. Gemeinsam finden wir den optimalen Weg, um Ihre KI-Ambitionen sicher und profitabel umzusetzen.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-slate-900 hover:bg-slate-800 text-white px-10 py-5 rounded-lg text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl inline-flex items-center justify-center space-x-3">
+            <button type="button" className="bg-slate-900 hover:bg-slate-800 text-white px-10 py-5 rounded-lg text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl inline-flex items-center justify-center space-x-3">
               <span>Kostenloses Vorgespräch buchen</span>
               <ArrowRight className="w-6 h-6" />
             </button>
-            <button className="bg-white hover:bg-slate-50 text-slate-900 px-10 py-5 rounded-lg text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl border-2 border-slate-900">
+            <button type="button" className="bg-white hover:bg-slate-50 text-slate-900 px-10 py-5 rounded-lg text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl border-2 border-slate-900">
               Mehr erfahren
             </button>
           </div>
@@ -573,6 +845,7 @@ function App() {
 
         <div className="mt-12">
           <button
+            type="button"
             onClick={handleNav('/')}
             className="inline-flex items-center px-6 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors duration-200"
           >
@@ -658,6 +931,7 @@ function App() {
 
         <div className="mt-12">
           <button
+            type="button"
             onClick={handleNav('/')}
             className="inline-flex items-center px-6 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors duration-200"
           >
@@ -752,6 +1026,7 @@ function App() {
 
         <div className="mt-12">
           <button
+            type="button"
             onClick={handleNav('/')}
             className="inline-flex items-center px-6 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors duration-200"
           >
@@ -767,6 +1042,8 @@ function App() {
       {header}
       {route === 'impressum' ? impressumPage : route === 'datenschutz' ? datenschutzPage : route === 'cookies' ? cookiesPage : homePage}
       {footer}
+      {cookieBanner}
+      {cookieSettings}
     </div>
   );
 }
