@@ -119,9 +119,14 @@ function App() {
             ARC Assessment
           </a>
         </div>
-        <button type="button" className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg font-medium transition-colors duration-200">
+        <a
+          href="https://tidycal.com/antoniovonstrachwitz/arc-assessment-erstgespraech"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg font-medium transition-colors duration-200"
+        >
           Erstgespräch vereinbaren
-        </button>
+        </a>
       </nav>
     </header>
   );
@@ -387,10 +392,15 @@ function App() {
             <p className="text-xl md:text-2xl text-slate-700 mb-10 leading-relaxed">
               Machen Sie Ihr Unternehmen fit für die KI-Ära – profitabel, operativ umsetzbar und rechtlich abgesichert.
             </p>
-            <button type="button" className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl inline-flex items-center space-x-2">
+            <a
+              href="https://tidycal.com/antoniovonstrachwitz/arc-assessment-erstgespraech"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl inline-flex items-center space-x-2"
+            >
               <span>Jetzt Erstgespräch vereinbaren</span>
               <ArrowRight className="w-5 h-5" />
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -753,14 +763,16 @@ function App() {
           <p className="text-lg text-slate-700 mb-10 leading-relaxed">
             Wir erstellen Ihnen gerne ein individuelles Angebot, das exakt auf Ihre Bedürfnisse, Ihre Branche und Ihren Reifegrad zugeschnitten ist. Gemeinsam finden wir den optimalen Weg, um Ihre KI-Ambitionen sicher und profitabel umzusetzen.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button type="button" className="bg-slate-900 hover:bg-slate-800 text-white px-10 py-5 rounded-lg text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl inline-flex items-center justify-center space-x-3">
+          <div className="flex justify-center">
+            <a
+              href="https://tidycal.com/antoniovonstrachwitz/arc-assessment-erstgespraech"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-10 py-5 rounded-lg text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl inline-flex items-center justify-center space-x-3"
+            >
               <span>Kostenloses Vorgespräch buchen</span>
               <ArrowRight className="w-6 h-6" />
-            </button>
-            <button type="button" className="bg-white hover:bg-slate-50 text-slate-900 px-10 py-5 rounded-lg text-xl font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl border-2 border-slate-900">
-              Mehr erfahren
-            </button>
+            </a>
           </div>
         </div>
       </section>
