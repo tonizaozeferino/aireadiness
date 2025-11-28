@@ -625,8 +625,12 @@ function App() {
 
           <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
             <div className="text-center">
-              <div className="w-48 h-48 mx-auto mb-6 rounded-full bg-slate-200 flex items-center justify-center">
-                <span className="text-slate-400 text-sm">Profilbild</span>
+              <div className="w-48 h-48 mx-auto mb-6 rounded-full overflow-hidden bg-slate-200">
+                <img
+                  src="/photos/antonio1.png"
+                  alt="António Freiherr von Strachwitz"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-2xl font-bold text-sky-900 mb-2">
                 António Freiherr von Strachwitz
@@ -638,8 +642,12 @@ function App() {
             </div>
 
             <div className="text-center">
-              <div className="w-48 h-48 mx-auto mb-6 rounded-full bg-slate-200 flex items-center justify-center">
-                <span className="text-slate-400 text-sm">Profilbild</span>
+              <div className="w-48 h-48 mx-auto mb-6 rounded-full overflow-hidden bg-slate-200">
+                <img
+                  src="/photos/nicole1.jpeg"
+                  alt="Nicole Fink"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-2xl font-bold text-sky-900 mb-2">
                 Nicole Fink
