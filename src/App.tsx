@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useState } from 'react';
-import { Shield, TrendingUp, CheckCircle, ArrowRight, Zap, Scale, FileCheck, Target, Clock, Award, BookCheck, X, Settings } from 'lucide-react';
+import { Shield, CheckCircle, ArrowRight, Zap, FileCheck, Target, Award, X, Settings } from 'lucide-react';
 
 type Route = 'home' | 'impressum' | 'datenschutz' | 'cookies';
 
